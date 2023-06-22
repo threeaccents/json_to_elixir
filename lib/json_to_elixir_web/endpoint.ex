@@ -7,7 +7,7 @@ defmodule JTEWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_json_to_elixir_key",
-    signing_salt: "TzXoWegO",
+    signing_salt: "Iwxu61EQ",
     same_site: "Lax"
   ]
 
@@ -29,7 +29,6 @@ defmodule JTEWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :json_to_elixir
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,

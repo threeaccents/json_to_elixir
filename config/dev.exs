@@ -1,15 +1,5 @@
 import Config
 
-# Configure your database
-config :json_to_elixir, JTE.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "json_to_elixir_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -23,7 +13,7 @@ config :json_to_elixir, JTEWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "1RLINzs6xC5F1oYMzwmCILnv3ZgIfp1Lwy5D/ttpZJGwBI0hTKUZOKzWGvs3edzr",
+  secret_key_base: "DWHRPsOYFIjg/ejwNFtepxGMlVzSQUvTgMXt1L3G9piD0W2AdzNOoUti8lSPxtrW",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}

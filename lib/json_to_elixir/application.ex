@@ -10,8 +10,6 @@ defmodule JTE.Application do
     children = [
       # Start the Telemetry supervisor
       JTEWeb.Telemetry,
-      # Start the Ecto repository
-      JTE.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: JTE.PubSub},
       # Start Finch

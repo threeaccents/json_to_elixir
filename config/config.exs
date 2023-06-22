@@ -8,8 +8,7 @@
 import Config
 
 config :json_to_elixir,
-  namespace: JTE,
-  ecto_repos: [JTE.Repo]
+  namespace: JTE
 
 # Configures the endpoint
 config :json_to_elixir, JTEWeb.Endpoint,
@@ -19,7 +18,7 @@ config :json_to_elixir, JTEWeb.Endpoint,
     layout: false
   ],
   pubsub_server: JTE.PubSub,
-  live_view: [signing_salt: "QGjwloVh"]
+  live_view: [signing_salt: "HB9f8hSH"]
 
 # Configures the mailer
 #
