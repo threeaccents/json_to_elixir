@@ -47,7 +47,8 @@ defmodule JTE.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ecto, "~> 3.10"}
+      {:ecto, "~> 3.10"},
+      {:live_monaco_editor, "~> 0.1"}
     ]
   end
 
