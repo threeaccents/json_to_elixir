@@ -8,8 +8,7 @@ config :json_to_elixir, JTEWeb.Endpoint,
   server: false
 
 # In test we don't send emails.
-config :json_to_elixir, JTE.Mailer,
-  adapter: Swoosh.Adapters.Test
+config :json_to_elixir, JTE.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
