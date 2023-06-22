@@ -1,6 +1,6 @@
-defmodule ETJ do
+defmodule JTE do
   @moduledoc """
-  ETJ keeps the contexts that define your domain
+  JTE keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

@@ -1,11 +1,11 @@
-defmodule ETJWeb.Gettext do
+defmodule JTEWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 
   By using [Gettext](https://hexdocs.pm/gettext),
   your module gains a set of macros for translations, for example:
 
-      import ETJWeb.Gettext
+      import JTEWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")
@@ -20,5 +20,5 @@ defmodule ETJWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :elixir_to_json
+  use Gettext, otp_app: :json_to_elixir
 end

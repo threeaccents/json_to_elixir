@@ -1,4 +1,4 @@
-defmodule ETJ.Application do
+defmodule JTE.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -9,22 +9,22 @@ defmodule ETJ.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
-      ETJWeb.Telemetry,
+      JTEWeb.Telemetry,
       # Start the Ecto repository
-      ETJ.Repo,
+      JTE.Repo,
       # Start the PubSub system
-      {Phoenix.PubSub, name: ETJ.PubSub},
+      {Phoenix.PubSub, name: JTE.PubSub},
       # Start Finch
-      {Finch, name: ETJ.Finch},
+      {Finch, name: JTE.Finch},
       # Start the Endpoint (http/https)
-      ETJWeb.Endpoint
-      # Start a worker by calling: ETJ.Worker.start_link(arg)
-      # {ETJ.Worker, arg}
+      JTEWeb.Endpoint
+      # Start a worker by calling: JTE.Worker.start_link(arg)
+      # {JTE.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: ETJ.Supervisor]
+    opts = [strategy: :one_for_one, name: JTE.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -32,7 +32,7 @@ defmodule ETJ.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    ETJWeb.Endpoint.config_change(changed, removed)
+    JTEWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

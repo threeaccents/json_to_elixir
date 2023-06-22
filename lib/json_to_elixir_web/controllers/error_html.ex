@@ -1,12 +1,12 @@
-defmodule ETJWeb.ErrorHTML do
-  use ETJWeb, :html
+defmodule JTEWeb.ErrorHTML do
+  use JTEWeb, :html
 
   # If you want to customize your error pages,
   # uncomment the embed_templates/1 call below
   # and add pages to the error directory:
   #
-  #   * lib/elixir_to_json_web/controllers/error_html/404.html.heex
-  #   * lib/elixir_to_json_web/controllers/error_html/500.html.heex
+  #   * lib/json_to_elixir_web/controllers/error_html/404.html.heex
+  #   * lib/json_to_elixir_web/controllers/error_html/500.html.heex
   #
   # embed_templates "error_html/*"
 

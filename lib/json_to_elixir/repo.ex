@@ -1,5 +1,5 @@
-defmodule ETJ.Repo do
+defmodule JTE.Repo do
   use Ecto.Repo,
-    otp_app: :elixir_to_json,
+    otp_app: :json_to_elixir,
     adapter: Ecto.Adapters.Postgres
 end

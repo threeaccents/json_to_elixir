@@ -1,4 +1,4 @@
-defmodule ETJWeb.ConnCase do
+defmodule JTEWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule ETJWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use ETJWeb.ConnCase, async: true`, although
+  by setting `use JTEWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -20,19 +20,19 @@ defmodule ETJWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint ETJWeb.Endpoint
+      @endpoint JTEWeb.Endpoint
 
-      use ETJWeb, :verified_routes
+      use JTEWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import ETJWeb.ConnCase
+      import JTEWeb.ConnCase
     end
   end
 
   setup tags do
-    ETJ.DataCase.setup_sandbox(tags)
+    JTE.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

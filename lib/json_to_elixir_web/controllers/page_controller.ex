@@ -1,5 +1,5 @@
-defmodule ETJWeb.PageController do
-  use ETJWeb, :controller
+defmodule JTEWeb.PageController do
+  use JTEWeb, :controller
 
   def home(conn, _params) do
     # The home page is often custom made,

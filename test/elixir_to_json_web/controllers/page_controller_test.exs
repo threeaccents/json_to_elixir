@@ -1,5 +1,5 @@
-defmodule ETJWeb.PageControllerTest do
-  use ETJWeb.ConnCase
+defmodule JTEWeb.PageControllerTest do
+  use JTEWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

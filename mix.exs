@@ -1,9 +1,9 @@
-defmodule ETJ.MixProject do
+defmodule JTE.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :elixir_to_json,
+      app: :json_to_elixir,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -18,7 +18,7 @@ defmodule ETJ.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {ETJ.Application, []},
+      mod: {JTE.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

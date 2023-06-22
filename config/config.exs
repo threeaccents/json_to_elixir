@@ -7,18 +7,18 @@
 # General application configuration
 import Config
 
-config :elixir_to_json,
-  namespace: ETJ,
-  ecto_repos: [ETJ.Repo]
+config :json_to_elixir,
+  namespace: JTE,
+  ecto_repos: [JTE.Repo]
 
 # Configures the endpoint
-config :elixir_to_json, ETJWeb.Endpoint,
+config :json_to_elixir, JTEWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [html: ETJWeb.ErrorHTML, json: ETJWeb.ErrorJSON],
+    formats: [html: JTEWeb.ErrorHTML, json: JTEWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: ETJ.PubSub,
+  pubsub_server: JTE.PubSub,
   live_view: [signing_salt: "QGjwloVh"]
 
 # Configures the mailer
@@ -28,7 +28,7 @@ config :elixir_to_json, ETJWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :elixir_to_json, ETJ.Mailer, adapter: Swoosh.Adapters.Local
+config :json_to_elixir, JTE.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

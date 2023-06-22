@@ -1,12 +1,12 @@
-defmodule ETJWeb do
+defmodule JTEWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use ETJWeb, :controller
-      use ETJWeb, :html
+      use JTEWeb, :controller
+      use JTEWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -40,10 +40,10 @@ defmodule ETJWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: ETJWeb.Layouts]
+        layouts: [html: JTEWeb.Layouts]
 
       import Plug.Conn
-      import ETJWeb.Gettext
+      import JTEWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -52,7 +52,7 @@ defmodule ETJWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {ETJWeb.Layouts, :app}
+        layout: {JTEWeb.Layouts, :app}
 
       unquote(html_helpers())
     end
@@ -84,8 +84,8 @@ defmodule ETJWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import ETJWeb.CoreComponents
-      import ETJWeb.Gettext
+      import JTEWeb.CoreComponents
+      import JTEWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
@@ -98,9 +98,9 @@ defmodule ETJWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: ETJWeb.Endpoint,
-        router: ETJWeb.Router,
-        statics: ETJWeb.static_paths()
+        endpoint: JTEWeb.Endpoint,
+        router: JTEWeb.Router,
+        statics: JTEWeb.static_paths()
     end
   end
 

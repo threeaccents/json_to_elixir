@@ -1,4 +1,4 @@
-# ETJ
+# JTE
 
 To start your Phoenix server:
 

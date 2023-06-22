@@ -1,11 +1,11 @@
-defmodule ETJWeb.Router do
-  use ETJWeb, :router
+defmodule JTEWeb.Router do
+  use JTEWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {ETJWeb.Layouts, :root}
+    plug :put_root_layout, html: {JTEWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -14,19 +14,19 @@ defmodule ETJWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", ETJWeb do
+  scope "/", JTEWeb do
     pipe_through :browser
 
     get "/", PageController, :home
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", ETJWeb do
+  # scope "/api", JTEWeb do
   #   pipe_through :api
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:elixir_to_json, :dev_routes) do
+  if Application.compile_env(:json_to_elixir, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
@@ -37,7 +37,7 @@ defmodule ETJWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: ETJWeb.Telemetry
+      live_dashboard "/dashboard", metrics: JTEWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

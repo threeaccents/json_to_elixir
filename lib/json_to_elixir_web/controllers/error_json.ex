@@ -1,4 +1,4 @@
-defmodule ETJWeb.ErrorJSON do
+defmodule JTEWeb.ErrorJSON do
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #
