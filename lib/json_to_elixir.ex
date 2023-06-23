@@ -8,46 +8,48 @@ defmodule JTE do
 
   """
 
-  def convert_map(map) when is_map(map) do
-    IO.inspect(
-      quote do
-        defmodule JSON do
-          defmodule Other do
-            defstruct bar: ""
-          end
+  @input """
 
-          defstruct foo: ""
-        end
-      end
-    )
+        {
+        "squadName": "Super hero squad",
+        "homeTown": "Metro City",
+        "formed": 2016,
+        "secretBase": "Super tower",
+        "active": true,
+        "members": [
+        {
+        "name": "Molecule Man",
+        "age": 29,
+        "secretIdentity": "Dan Jukes",
+        "powers": ["Radiation resistance", "Turning tiny", "Radiation blast"]
+        },
+        {
+        "name": "Madame Uppercut",
+        "age": 39,
+        "secretIdentity": "Jane Wilson",
+        "powers": [
+          "Million tonne punch",
+          "Damage resistance",
+          "Superhuman reflexes"
+        ]
+        },
+        {
+        "name": "Eternal Flame",
+        "age": 1000000,
+        "secretIdentity": "Unknown",
+        "powers": [
+          "Immortality",
+          "Heat Immunity",
+          "Inferno",
+          "Teleportation",
+          "Interdimensional travel"
+        ]
+        }
+        ]
+        }
+  """
 
-    inital_state =
-      {:defmodule, [context: JTE, imports: [{2, Kernel}]],
-       [{:__aliases__, [alias: false], [:JSON]}, [do: {:__block__, [], []}]]}
-
-    for {key, value} <- map, reduce: inital_state do
-      acc ->
-        case quote do: value do
-          {%{}, _, _} ->
-            append_module(acc, key, value)
-        end
-    end
-  end
-
-  defp type(t) when is_map(t), do: :map
-
-  defp append_module(ast, key, value) do
-    {:defmodule, metadata, [do: {:__block__, [], children}]} = ast
-
-    module =
-      {:defmodule, [context: JTE, imports: [{2, Kernel}]],
-       [
-         {:__aliases__, [alias: false], [String.to_atom(Macro.camelize(key))]},
-         []
-       ]}
-
-    children = [module | children]
-
-    {:defmodule, metadata, [do: {:__block__, [], children}]}
+  def run() do
+    Poison.Parser.parse!(@input)
   end
 end
