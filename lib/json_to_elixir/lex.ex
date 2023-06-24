@@ -39,74 +39,90 @@ defmodule JTE.Lexer do
         ]
         }
   """
-
-  def tokenize(), do: tokenize(@input)
+  @lbrace 123
+  @rbrace 125
+  @colon 58
+  @lbracket 91
+  @rbracket 93
+  @comma 44
+  @quote 34
 
   def tokenize(input) when is_binary(input) do
     tokenize(input, [])
   end
 
-  defp tokenize("", tokens), do: Enum.reverse([{:eof, nil} | tokens])
+  defp tokenize("", tokens), do: tokens
 
-  defp tokenize(<<ch::size(8), rest::binary>> = chars, tokens) do
-    {token, chars} =
-      cond do
-        is_whitespace(ch) ->
-          {nil, rest}
+  defp tokenize(<<char::size(8), rest::binary>>, tokens) do
+    cond do
+      is_whitespace(char) ->
+        tokenize(rest, tokens)
 
-        is_quote(ch) ->
-          {str_literal, rest} = read_string(rest)
+      is_left_brace(char) ->
+        {{:lbrace, "{"}, rest}
 
-          {{:string, str_literal}, rest}
+      is_right_brace(char) ->
+        {{:rbrace, "}"}, rest}
 
-        is_digit(ch) ->
-          {number, rest} = read_number(chars)
-          {{:number, number}, rest}
+      is_colon(char) ->
+        {{:colon, ":"}, rest}
 
-        is_letter(ch) ->
-          {literal, rest} = read_identifier(chars)
+      is_comma(char) ->
+        {{:comma, ","}, rest}
 
-          {{:bool, literal}, rest}
+      is_left_bracket(char) ->
+        {{:lbracket, "["}, rest}
 
-        true ->
-          {{symbol(ch), ch}, rest}
-      end
+      is_right_bracket(char) ->
+        {{:rbracket, "]"}, rest}
 
-    if token != nil do
-      tokenize(chars, [token | tokens])
-    else
-      tokenize(chars, tokens)
+      is_quote(char) ->
+        {literal, rest} = read_string(rest)
+
+        {{:string, literal}, rest}
+
+      is_letter(char) ->
+        nil
     end
   end
 
-  defp read_string(<<word::binary, "\"", rest::binary>>) do
-    {word, rest}
+  defp read_string(chars) when is_binary(chars) do
+    read_string(chars, [])
   end
 
-  defp read_number(chars) do
-    {number, rest} = Enum.split_while(chars, &is_digit/1)
-    number = Enum.join(number)
+  defp read_string(<<char::size(8), rest::binary>>, curr_literal) when char == @quote do
+    string_lit =
+      curr_literal
+      |> Enum.reverse()
+      |> List.to_string()
 
-    {number, rest}
+    {string_lit, rest}
   end
 
-  defp read_identifier(chars) do
-    {identifier, rest} = Enum.split_while(chars, &is_letter/1)
-    identifier = Enum.join(identifier)
-
-    case identifier do
-      "true" -> {true, rest}
-      "false" -> {false, rest}
-      _ -> raise "invalid character"
-    end
+  defp read_literal(chars) when is_binary(chars) do
+    read_literal(chars, [])
   end
 
-  defp symbol(123), do: :lbrace
-  defp symbol(125), do: :rbrace
-  defp symbol(58), do: :colon
-  defp symbol(91), do: :lbracket
-  defp symbol(93), do: :rbracket
-  defp symbol(44), do: :comma
+  defp read_literal(<<char::size(8), rest::binary>>, curr_literal) when char == @comma do
+    string_lit =
+      curr_literal
+      |> Enum.reverse()
+      |> List.to_string()
+
+    {string_lit, rest}
+  end
+
+  defp read_li
+
+  defp read_string(<<char::size(8), rest::binary>>, curr_literal),
+    do: read_string(rest, [char | curr_literal])
+
+  defp is_left_brace(char), do: char == @lbrace
+  defp is_right_brace(char), do: char == @rbrace
+  defp is_colon(char), do: char == @colon
+  defp is_comma(char), do: char == @comma
+  defp is_left_bracket(char), do: char == @lbracket
+  defp is_right_bracket(char), do: char == @rbracket
 
   defp is_digit(ch) do
     ch >= 48 and ch <= 57
