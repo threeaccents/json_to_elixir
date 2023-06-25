@@ -48,7 +48,7 @@ defmodule JTE.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:ecto, "~> 3.10"},
-      {:poison, "~> 5.0"}
+      {:live_monaco_editor, "~> 0.1"}
     ]
   end
 

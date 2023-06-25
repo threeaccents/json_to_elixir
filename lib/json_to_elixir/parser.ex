@@ -11,6 +11,8 @@ defmodule JTE.Parser do
 
   def parse([]), do: nil
 
+  def parse([%Token{type: :eof}]), do: nil
+
   def parse([%Token{type: :lbrace} | tail]) do
     {block, _tail} = parse_block(tail, [])
 
@@ -25,5 +27,13 @@ defmodule JTE.Parser do
   defp parse_block([%Token{value: key}, _colon, %Token{type: type}, _terminator | tail], block)
        when type in @literals do
     parse_block(tail, [{:field, [], [:"#{key}", type]} | block])
+  end
+
+  defp parse_block([%Token{value: key}, _colon, %Token{type: :lbrace} | tail], block) do
+    {inner_block, tail} = parse_block(tail, [])
+
+    parse_block(tail, [
+      {:embeds_one, [], [:"#{key}", [do: {:__block__, [], inner_block}]]} | block
+    ])
   end
 end

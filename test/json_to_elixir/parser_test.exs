@@ -14,13 +14,18 @@ defmodule JsonToElixir.ParserTest do
       "what": null,
       "no": false,
       "formed": 2016,
-      "active": true
+      "active": true,
+      "child": {
+          "test": "here"
+        }
       }
       """
 
       Lexer.tokenize(input)
       |> IO.inspect(label: :yo)
       |> Parser.parse()
+      |> Macro.to_string()
+      |> IO.puts()
     end
   end
 end

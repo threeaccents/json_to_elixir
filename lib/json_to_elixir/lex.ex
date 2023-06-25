@@ -5,149 +5,91 @@ defmodule JTE.Lexer do
   The tokensized values are optimized to be used directly by the parser.
   """
 
-  alias JTE.Token
+  defguard is_whitespace(c) when c in ~c[ \r\n\t]
+  defguard is_letter(c) when c in ?a..?z or c in ?A..?Z or c == ?_
+  defguard is_digit(c) when c in ?0..?9
+  defguard is_float_digit(c) when c in ?0..?9 or c == ?.
+  defguard is_quote(c) when c == ?"
 
-  @lbrace 123
-  @rbrace 125
-  @colon 58
-  @lbracket 91
-  @rbracket 93
-  @comma 44
-  @quote 34
-  @period 46
-
-  defguard is_whitespace?(ch) when ch == 32 or ch == 10 or ch == 9
-
-  def tokenize(input) when is_binary(input) do
-    tokenize(input, [])
+  def new(input) when is_binary(input) do
+    lex(input, [])
   end
 
-  defp tokenize("", tokens), do: Enum.reverse([%Token{type: :eof} | tokens])
+  defp lex(<<>>, tokens), do: Enum.reverse([:eof | tokens])
 
-  defp tokenize(<<char::size(8), rest::binary>> = chars, tokens) do
-    IO.inspect(chars, label: "CHARS")
-    IO.inspect(tokens, label: "TOKENS")
+  defp lex(<<c::8, rest::binary>>, tokens) when is_whitespace(c), do: lex(rest, tokens)
 
-    cond do
-      is_whitespace(char) ->
-        {nil, rest}
+  defp lex(chars, tokens) do
+    {token, rest} = tokenize(chars)
 
-      is_left_brace(char) ->
-        {%Token{type: :lbrace, value: "{"}, rest}
+    lex(rest, [token | tokens])
+  end
 
-      is_right_brace(char) ->
-        {%Token{type: :rbrace, value: "}"}, rest}
+  defp tokenize(chars) do
+    case chars do
+      <<"{", rest::binary>> ->
+        {:lbrace, rest}
 
-      is_colon(char) ->
-        {%Token{type: :colon, value: ":"}, rest}
+      <<"}", rest::binary>> ->
+        {:rbrace, rest}
 
-      is_comma(char) ->
-        {%Token{type: :comma, value: ","}, rest}
+      <<"[", rest::binary>> ->
+        {:lbracket, rest}
 
-      is_left_bracket(char) ->
-        {%Token{type: :lbracket, value: "["}, rest}
+      <<"]", rest::binary>> ->
+        {:rbracket, rest}
 
-      is_right_bracket(char) ->
-        {%Token{type: :rbracket, value: "]"}, rest}
+      <<",", rest::binary>> ->
+        {:comma, rest}
 
-      is_quote(char) ->
-        {literal, rest} = read_string(rest)
+      <<":", rest::binary>> ->
+        {:colon, rest}
 
-        {%Token{type: :string, value: literal}, rest}
+      <<"\"", rest::binary>> ->
+        {string, rest} = read_string(rest, <<>>)
+        {{:string, string}, rest}
 
-      is_letter(char) ->
-        {literal, rest} = read_literal(chars)
+      <<c::8, rest::binary>> when is_letter(c) ->
+        {literal, rest} = read_literal(rest, <<c>>)
 
         case literal do
-          "true" -> {%Token{type: :bool, value: true}, rest}
-          "false" -> {%Token{type: :bool, value: false}, rest}
-          "null" -> {%Token{type: :null, value: nil}, rest}
-          _ -> raise "invalid token #{inspect(char)}"
+          "true" -> {{:bool, true}, rest}
+          "false" -> {{:bool, false}, rest}
+          "null" -> {{:null, nil}, rest}
+          literal -> raise "invalid literal #{inspect(literal)}"
         end
 
-      is_digit(char) ->
-        {number, rest} = read_number(chars)
+      <<c::8, rest::binary>> when is_digit(c) ->
+        {number, rest} = read_number(rest, <<c>>)
 
-        {%Token{type: :integer, value: number}, rest}
+        {{:integer, number}, rest}
+
+      chars ->
+        raise "invalid token #{inspect(chars)}"
     end
-    |> case do
-      {%Token{} = token, chars} -> tokenize(chars, [token | tokens])
-      {nil, rest} -> tokenize(rest, tokens)
-    end
   end
 
-  defp read_string(chars) when is_binary(chars) do
-    read_string(chars, [])
+  defp read_string(<<"\"", rest::binary>>, acc) do
+    {IO.iodata_to_binary(acc), rest}
   end
 
-  defp read_string(<<char::size(8), rest::binary>>, curr_literal) when char == @quote do
-    string_lit =
-      curr_literal
-      |> Enum.reverse()
-      |> List.to_string()
-
-    {string_lit, rest}
+  defp read_string(<<c::8, rest::binary>>, acc) do
+    read_string(rest, [acc | <<c>>])
   end
 
-  defp read_string(<<char::size(8), rest::binary>>, curr_literal),
-    do: read_string(rest, [char | curr_literal])
-
-  defp read_number(chars) when is_binary(chars) do
-    read_number(chars, [])
+  defp read_literal(<<c::8, rest::binary>>, acc) when not is_letter(c) do
+    {IO.iodata_to_binary(acc), rest}
   end
 
-  defp read_number(<<char::size(8), _rest::binary>> = chars, curr_number)
-       when char == @comma or char == @rbrace do
-    num = Enum.reverse(curr_number)
-
-    num =
-      if Enum.any?(num, &(&1 == @period)) do
-        List.to_float(num)
-      else
-        List.to_integer(num)
-      end
-
-    {num, chars}
+  defp read_literal(<<c::8, rest::binary>>, acc) do
+    read_literal(rest, [acc | <<c>>])
   end
 
-  defp read_number(<<char::size(8), rest::binary>>, curr_number),
-    do: read_number(rest, [char | curr_number])
-
-  defp read_literal(chars) when is_binary(chars) do
-    read_literal(chars, [])
+  defp read_number(<<c::8, rest::binary>>, acc) when not is_float_digit(c) do
+    {IO.iodata_to_binary(acc), rest}
   end
 
-  defp read_literal(<<char::size(8), _rest::binary>> = chars, curr_literal)
-       when is_whitespace?(char) or char == @comma or char == @rbrace do
-    string_lit =
-      curr_literal
-      |> Enum.reverse()
-      |> List.to_string()
-
-    {string_lit, chars}
+  defp read_number(<<c::8, rest::binary>>, acc) do
+    read_number(rest, [acc | <<c>>])
   end
-
-  defp read_literal(<<char::size(8), rest::binary>>, curr_literal),
-    do: read_literal(rest, [char | curr_literal])
-
-  defp is_left_brace(char), do: char == @lbrace
-  defp is_right_brace(char), do: char == @rbrace
-  defp is_colon(char), do: char == @colon
-  defp is_comma(char), do: char == @comma
-  defp is_left_bracket(char), do: char == @lbracket
-  defp is_right_bracket(char), do: char == @rbracket
-
-  defp is_digit(ch) do
-    ch >= 48 and ch <= 57
-  end
-
-  defp is_letter(ch) do
-    (ch >= 65 and ch <= 90) or (ch >= 97 and ch <= 122)
-  end
-
-  defp is_whitespace(ch) do
-    ch == 32 || ch == 10 || ch == 9
-  end
-
-  defp is_quote(ch), do: ch == 34
 end
