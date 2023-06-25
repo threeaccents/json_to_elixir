@@ -1,10 +1,8 @@
 defmodule JTE.Parser do
-  def parse([{:eof, _}], ast), do: ast
-
-  def parse([token | rest], ast) do
-    case token do
-      {:lbrace, _} ->
-        nil
-    end
-  end
+  @moduledoc """
+  JSON parser. 
+  It expects the tokens generarted by the lexer.
+  Since the lexer only takes in valid JSON the parser
+  can expect to receive only valid tokens.
+  """
 end
