@@ -16,6 +16,8 @@ defmodule JTE.Lexer do
   @quote 34
   @period 46
 
+  defguard is_whitespace?(ch) when ch == 32 or ch == 10 or ch == 9
+
   def tokenize(input) when is_binary(input) do
     tokenize(input, [])
   end
@@ -23,6 +25,9 @@ defmodule JTE.Lexer do
   defp tokenize("", tokens), do: Enum.reverse([%Token{type: :eof} | tokens])
 
   defp tokenize(<<char::size(8), rest::binary>> = chars, tokens) do
+    IO.inspect(chars, label: "CHARS")
+    IO.inspect(tokens, label: "TOKENS")
+
     cond do
       is_whitespace(char) ->
         {nil, rest}
@@ -91,7 +96,7 @@ defmodule JTE.Lexer do
     read_number(chars, [])
   end
 
-  defp read_number(<<char::size(8), rest::binary>>, curr_number)
+  defp read_number(<<char::size(8), _rest::binary>> = chars, curr_number)
        when char == @comma or char == @rbrace do
     num = Enum.reverse(curr_number)
 
@@ -102,7 +107,7 @@ defmodule JTE.Lexer do
         List.to_integer(num)
       end
 
-    {num, rest}
+    {num, chars}
   end
 
   defp read_number(<<char::size(8), rest::binary>>, curr_number),
@@ -112,14 +117,14 @@ defmodule JTE.Lexer do
     read_literal(chars, [])
   end
 
-  defp read_literal(<<char::size(8), rest::binary>>, curr_literal)
-       when char == @comma or char == @rbrace do
+  defp read_literal(<<char::size(8), _rest::binary>> = chars, curr_literal)
+       when is_whitespace?(char) or char == @comma or char == @rbrace do
     string_lit =
       curr_literal
       |> Enum.reverse()
       |> List.to_string()
 
-    {string_lit, rest}
+    {string_lit, chars}
   end
 
   defp read_literal(<<char::size(8), rest::binary>>, curr_literal),
