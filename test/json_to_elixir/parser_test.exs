@@ -1,7 +1,6 @@
 defmodule JsonToElixir.ParserTest do
   use ExUnit.Case, async: true
 
-  alias JTE.Token
   alias JTE.Lexer
   alias JTE.Parser
 
@@ -16,16 +15,38 @@ defmodule JsonToElixir.ParserTest do
       "formed": 2016,
       "active": true,
       "child": {
-          "test": "here"
+          "hello": "world",
+          "foo": "bar"
         }
       }
       """
 
-      Lexer.tokenize(input)
-      |> IO.inspect(label: :yo)
-      |> Parser.parse()
-      |> Macro.to_string()
-      |> IO.puts()
+      assert {:embedded_schema, [],
+              [
+                [
+                  do:
+                    {:__block__, [],
+                     [
+                       {:embeds_one, [],
+                        [
+                          :child,
+                          [
+                            do:
+                              {:__block__, [],
+                               [{:field, [], [:foo, :string]}, {:field, [], [:hello, :string]}]}
+                          ]
+                        ]},
+                       {:field, [], [:active, :bool]},
+                       {:field, [], [:formed, :integer]},
+                       {:field, [], [:no, :bool]},
+                       {:field, [], [:what, :null]},
+                       {:field, [], [:age, :integer]},
+                       {:field, [], [:squadName, :string]}
+                     ]}
+                ]
+              ]} =
+               Lexer.lex(input)
+               |> Parser.parse()
     end
   end
 end

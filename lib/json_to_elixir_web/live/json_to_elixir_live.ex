@@ -4,11 +4,11 @@ defmodule JTEWeb.JsonToElixirLive do
   require Logger
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, result: "Elixir will be shown here")}
+    {:ok, socket}
   end
 
   def render(assigns) do
-    IO.inspect("rerender #{inspect(assigns)}")
+    IO.inspect(assigns, label: "render")
 
     ~H"""
     <div class="w-full h-full ">
@@ -33,7 +33,7 @@ defmodule JTEWeb.JsonToElixirLive do
         <div class="h-full p-4">
           <LiveMonacoEditor.code_editor
             id="elixir"
-            path="my.elixir"
+            path="my.ex"
             opts={
               Map.merge(
                 LiveMonacoEditor.default_opts(),
@@ -42,7 +42,6 @@ defmodule JTEWeb.JsonToElixirLive do
             }
             phx-debounce={1000}
             style="height: 100%"
-            value={@result}
           />
         </div>
       </div>
@@ -50,25 +49,23 @@ defmodule JTEWeb.JsonToElixirLive do
     """
   end
 
-  def handle_event(
-        "update",
-        %{
-          "live_monaco_editor" => %{"my.json" => json}
-        },
-        socket
-      ) do
-    case Jason.encode(json) do
+  def handle_event("editor-was-pasted", %{"value" => json}, socket) do
+    IO.inspect(json, label: "JSON")
+
+    case Jason.decode(json) do
       {:ok, parsed_json} ->
         result =
-          Jason.decode!(parsed_json)
-          |> JTE.Lexer.tokenize()
+          Jason.encode!(parsed_json)
+          |> JTE.Lexer.lex()
           |> JTE.Parser.parse()
           |> Macro.to_string()
 
-        {:noreply, assign(socket, result: result)}
+        IO.inspect(result, label: :result)
 
-      _ ->
-        Logger.error("failed to parse json")
+        {:noreply, LiveMonacoEditor.set_value(socket, result, to: "my.ex")}
+
+      {:error, reason} ->
+        Logger.error("failed to parse json #{inspect(reason)}")
         {:noreply, socket}
     end
   end

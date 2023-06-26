@@ -11,7 +11,7 @@ defmodule JTE.Lexer do
   defguard is_float_digit(c) when c in ?0..?9 or c == ?.
   defguard is_quote(c) when c == ?"
 
-  def new(input) when is_binary(input) do
+  def lex(input) when is_binary(input) do
     lex(input, [])
   end
 
@@ -77,16 +77,16 @@ defmodule JTE.Lexer do
     read_string(rest, [acc | <<c>>])
   end
 
-  defp read_literal(<<c::8, rest::binary>>, acc) when not is_letter(c) do
-    {IO.iodata_to_binary(acc), rest}
+  defp read_literal(<<c::8, _rest::binary>> = chars, acc) when not is_letter(c) do
+    {IO.iodata_to_binary(acc), chars}
   end
 
   defp read_literal(<<c::8, rest::binary>>, acc) do
     read_literal(rest, [acc | <<c>>])
   end
 
-  defp read_number(<<c::8, rest::binary>>, acc) when not is_float_digit(c) do
-    {IO.iodata_to_binary(acc), rest}
+  defp read_number(<<c::8, _rest::binary>> = chars, acc) when not is_float_digit(c) do
+    {IO.iodata_to_binary(acc), chars}
   end
 
   defp read_number(<<c::8, rest::binary>>, acc) do
