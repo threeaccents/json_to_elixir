@@ -1,8 +1,6 @@
 defmodule JTEWeb.JsonToElixirLive do
   use JTEWeb, :live_view
 
-  require Logger
-
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
@@ -47,18 +45,11 @@ defmodule JTEWeb.JsonToElixirLive do
   end
 
   def handle_event("editor-was-updated", %{"value" => json}, socket) do
-    case Jason.decode(json) do
-      {:ok, parsed_json} ->
-        result =
-          Jason.encode!(parsed_json)
-          |> JTE.Lexer.lex()
-          |> JTE.Parser.parse()
-          |> Macro.to_string()
-
+    case JTE.transform(json) do
+      {:ok, result} ->
         {:noreply, LiveMonacoEditor.set_value(socket, result, to: "my.ex")}
 
-      {:error, reason} ->
-        Logger.error("failed to parse json #{inspect(reason)}")
+      {:error, _reason} ->
         {:noreply, socket}
     end
   end
