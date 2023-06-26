@@ -8,27 +8,23 @@ defmodule JTEWeb.JsonToElixirLive do
   end
 
   def render(assigns) do
-    IO.inspect(assigns, label: "render")
-
     ~H"""
     <div class="w-full h-full ">
       <div class="grid grid-cols-2 h-full gap-4">
         <div class="h-full p-4 border-r">
-          <form phx-change="update" class="h-full">
-            <LiveMonacoEditor.code_editor
-              id="json"
-              path="my.json"
-              opts={
-                Map.merge(
-                  LiveMonacoEditor.default_opts(),
-                  %{"language" => "json"}
-                )
-              }
-              phx-debounce={1000}
-              style="height: 100%"
-              value="Paste JSON here"
-            />
-          </form>
+          <LiveMonacoEditor.code_editor
+            id="json"
+            path="my.json"
+            opts={
+              Map.merge(
+                LiveMonacoEditor.default_opts(),
+                %{"language" => "json"}
+              )
+            }
+            phx-debounce={1000}
+            style="height: 100%"
+            value="Paste JSON here"
+          />
         </div>
         <div class="h-full p-4">
           <LiveMonacoEditor.code_editor
@@ -49,9 +45,7 @@ defmodule JTEWeb.JsonToElixirLive do
     """
   end
 
-  def handle_event("editor-was-pasted", %{"value" => json}, socket) do
-    IO.inspect(json, label: "JSON")
-
+  def handle_event("editor-was-updated", %{"value" => json}, socket) do
     case Jason.decode(json) do
       {:ok, parsed_json} ->
         result =

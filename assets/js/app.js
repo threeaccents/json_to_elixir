@@ -52,7 +52,9 @@ window.addEventListener("lme:editor_mounted", (ev) => {
   // push an event to the parent liveview containing the editor current value
   // when the editor loses focus
   editor.onDidPaste(() => {
-    console.log("pasted!")
-    hook.pushEvent("editor-was-pasted", { value: editor.getValue() })
+    hook.pushEvent("editor-was-updated", { value: editor.getValue() })
+  })
+  editor.onKeyUp(() => {
+    hook.pushEvent("editor-was-updated", { value: editor.getValue() })
   })
 })

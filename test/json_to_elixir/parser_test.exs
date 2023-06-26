@@ -53,10 +53,95 @@ defmodule JsonToElixir.ParserTest do
       }
       """
 
-      Lexer.lex(input)
-      |> Parser.parse()
-      |> Macro.to_string()
-      |> IO.puts()
+      assert {:embedded_schema, [],
+              [
+                [
+                  do:
+                    {:__block__, [],
+                     [
+                       {:field, [], [:id, :string]},
+                       {:field, [], [:object, :string]},
+                       {:field, [], [:address, :null]},
+                       {:field, [], [:balance, :integer]},
+                       {:field, [], [:created, :integer]},
+                       {:field, [], [:currency, :string]},
+                       {:field, [], [:default_source, :string]},
+                       {:field, [], [:delinquent, :bool]},
+                       {:field, [], [:description, :string]},
+                       {:field, [], [:discount, :null]},
+                       {:field, [], [:email, :string]},
+                       {:field, [], [:invoice_prefix, :string]},
+                       {:embeds_one, [],
+                        [
+                          :invoice_settings,
+                          {:__aliases__, [], [:InvoiceSettings]},
+                          [
+                            do:
+                              {:__block__, [],
+                               [
+                                 {:field, [], [:rendering_options, :null]},
+                                 {:field, [], [:footer, :null]},
+                                 {:field, [], [:default_payment_method, :null]},
+                                 {:field, [], [:custom_fields, :null]}
+                               ]}
+                          ]
+                        ]},
+                       {:field, [], [:livemode, :bool]},
+                       {:embeds_one, [],
+                        [
+                          :metadata,
+                          {:__aliases__, [], [:Metadata]},
+                          [do: {:__block__, [], [{:field, [], [:order_id, :string]}]}]
+                        ]},
+                       {:field, [], [:name, :null]},
+                       {:field, [], [:next_invoice_sequence, :integer]},
+                       {:field, [], [:phone, :null]},
+                       {:field, [], [:shipping, :null]},
+                       {:field, [], [:things, {:array, :integer}]},
+                       {:field, [], [:other, {:array, :string}]},
+                       {:field, [], [:tax_exempt, :string]},
+                       {:field, [], [:test_clock, :null]},
+                       {:field, [], [:yes, {:array, :integer}]},
+                       {:embeds_many, [],
+                        [
+                          :real,
+                          {:__aliases__, [], [:Real]},
+                          [
+                            do:
+                              {:__block__, [],
+                               [
+                                 {:embeds_one, [],
+                                  [
+                                    :three,
+                                    {:__aliases__, [], [:Three]},
+                                    [
+                                      do:
+                                        {:__block__, [],
+                                         [
+                                           {:embeds_one, [],
+                                            [
+                                              :peter,
+                                              {:__aliases__, [], [:Peter]},
+                                              [
+                                                do:
+                                                  {:__block__, [],
+                                                   [{:field, [], [:hello, :string]}]}
+                                              ]
+                                            ]},
+                                           {:field, [], [:hello, :string]}
+                                         ]}
+                                    ]
+                                  ]},
+                                 {:field, [], [:one, :string]},
+                                 {:field, [], [:two, :integer]}
+                               ]}
+                          ]
+                        ]}
+                     ]}
+                ]
+              ]} =
+               Lexer.lex(input)
+               |> Parser.parse()
     end
   end
 end
