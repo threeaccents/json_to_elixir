@@ -33,7 +33,9 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("RENDER_EXTERNAL_HOSTNAME") || "jsontoelixir.com"
+  host =
+    System.get_env("HOST") || System.get_env("RENDER_EXTERNAL_HOSTNAME") || "jsontoelixir.com"
+
   port = String.to_integer(System.get_env("PORT") || "80")
 
   config :json_to_elixir, JTEWeb.Endpoint,
