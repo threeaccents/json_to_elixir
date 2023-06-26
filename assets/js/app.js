@@ -21,9 +21,13 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import { CodeEditorHook } from "../../deps/live_monaco_editor/priv/static/live_monaco_editor.esm"
+
+let Hooks = {}
+Hooks.CodeEditorHook = CodeEditorHook
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
@@ -39,3 +43,24 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+window.addEventListener("lme:editor_mounted", (ev) => {
+  const hook = ev.detail.hook
+
+  // https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html
+  const editor = ev.detail.editor.standalone_code_editor
+
+  // push an event to the parent liveview containing the editor current value
+  // when the editor loses focus
+  editor.onDidPaste(() => {
+    hook.pushEvent("editor-was-updated", { value: editor.getValue() })
+  })
+  editor.onKeyUp(() => {
+    hook.pushEvent("editor-was-updated", { value: editor.getValue() })
+  })
+  editor.onDidFocusEditorText(() => {
+    const value = editor.getValue()
+    if(value.includes("Paste")) {
+      editor.setValue("")
+    }
+  })
+})

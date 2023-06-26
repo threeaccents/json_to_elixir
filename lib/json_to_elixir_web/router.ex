@@ -17,9 +17,7 @@ defmodule JTEWeb.Router do
   scope "/", JTEWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-
-    live "/json-to-elixir", JsonToElixirLive
+    live "/", JsonToElixirLive
   end
 
   # Other scopes may use custom stacks.
