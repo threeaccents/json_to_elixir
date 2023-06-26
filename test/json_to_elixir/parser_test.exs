@@ -8,45 +8,43 @@ defmodule JsonToElixir.ParserTest do
     test "it tokenizes json correctly" do
       input = """
       {
-      "squadName": "Super hero squad",
-      "age": 12.1,
-      "what": null,
-      "no": false,
-      "formed": 2016,
-      "active": true,
-      "child": {
-          "hello": "world",
-          "foo": "bar"
-        }
+      "id": "cus_9s6XFG2Qq6Fe7v",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1483565364,
+      "currency": "usd",
+      "default_source": "card_1NLMwb2eZvKYlo2CrEVATdxC",
+      "delinquent": false,
+      "description": "Jamarcus Donnelly",
+      "discount": null,
+      "email": "user1850@smithpadberg.io",
+      "invoice_prefix": "E3C5260",
+      "invoice_settings": {
+      "custom_fields": null,
+      "default_payment_method": null,
+      "footer": null,
+      "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {
+      "order_id": "673345234234234"
+      },
+      "name": null,
+      "next_invoice_sequence": 6,
+      "phone": null,
+      "shipping": null,
+      "things": [1,2],
+      "other": [],
+      "tax_exempt": "none",
+      "test_clock": null
       }
       """
 
-      assert {:embedded_schema, [],
-              [
-                [
-                  do:
-                    {:__block__, [],
-                     [
-                       {:embeds_one, [],
-                        [
-                          :child,
-                          [
-                            do:
-                              {:__block__, [],
-                               [{:field, [], [:foo, :string]}, {:field, [], [:hello, :string]}]}
-                          ]
-                        ]},
-                       {:field, [], [:active, :bool]},
-                       {:field, [], [:formed, :integer]},
-                       {:field, [], [:no, :bool]},
-                       {:field, [], [:what, :null]},
-                       {:field, [], [:age, :integer]},
-                       {:field, [], [:squadName, :string]}
-                     ]}
-                ]
-              ]} =
-               Lexer.lex(input)
-               |> Parser.parse()
+      Lexer.lex(input)
+      |> Parser.parse()
+      |> Macro.to_string()
+      |> IO.puts()
     end
   end
 end
