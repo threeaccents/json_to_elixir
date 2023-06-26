@@ -81,18 +81,59 @@ defmodule JTE.Parser do
     # field :foo, :string
     # field :baz, :integer
     # end
-    {inner_blocks, tail} = parse_array_block(tail, [], %{})
+    {inner_blocks, tail} = parse_array_block(tail, [])
+
+    inner_blocks = Enum.uniq_by(inner_blocks, fn {_, _, [key | _]} -> key end)
 
     blocks = [
-      {:embeds_many, [], [:"#{key}", Macro.camelize(key), [do: {:__block__, [], inner_blocks}]]}
+      {:embeds_many, [],
+       [
+         :"#{key}",
+         {:__aliases__, [], [Macro.camelize(key) |> String.to_atom()]},
+         [do: {:__block__, [], inner_blocks}]
+       ]}
       | blocks
     ]
 
     parse_block(maybe_pop_comma(tail), blocks)
   end
 
-  defp parse_array_block([:rbracket | tail], blocks, _block_table) do
+  defp parse_array_block([:rbracket | tail], blocks) do
     {blocks, tail}
+  end
+
+  defp parse_array_block([:lbrace | tail], blocks) do
+    parse_array_block(tail, blocks)
+  end
+
+  defp parse_array_block([:rbrace | tail], blocks) do
+    parse_array_block(maybe_pop_comma(tail), blocks)
+  end
+
+  defp parse_array_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
+    blocks = [{:field, [], [:"#{key}", value_type]} | blocks]
+    parse_array_block(tail, blocks)
+  end
+
+  defp parse_array_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
+    blocks = [{:field, [], [:"#{key}", value_type]} | blocks]
+    parse_array_block(maybe_pop_comma(tail), blocks)
+  end
+
+  defp parse_array_block([{_, key}, :colon, :lbrace | tail], blocks) do
+    {inner_blocks, rest} = parse_block(tail, [])
+
+    blocks = [
+      {:embeds_one, [],
+       [
+         :"#{key}",
+         {:__aliases__, [], [Macro.camelize(key) |> String.to_atom()]},
+         [do: {:__block__, [], inner_blocks}]
+       ]}
+      | blocks
+    ]
+
+    parse_array_block(rest, blocks)
   end
 
   defp eat_until([], _), do: []

@@ -37,7 +37,19 @@ defmodule JsonToElixir.ParserTest do
       "things": [1,2],
       "other": [],
       "tax_exempt": "none",
-      "test_clock": null
+      "test_clock": null,
+      "yes": [1,2,3],
+      "real": [
+      {"one": "2"},
+      {"two": 3},
+      {"one": "three"},
+      {"three": {
+                  "hello": "wpr;da",
+                  "peter": {
+                    "hello": "world"
+                  }
+                }}
+      ]
       }
       """
 
