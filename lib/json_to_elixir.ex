@@ -1,18 +1,15 @@
 defmodule JTE do
-  @moduledoc """
-  JTE keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-
-  """
   alias JTE.Lexer
   alias JTE.Parser
   alias JTE.Eval
 
   require Logger
 
+  @doc """
+  This is the entry point for transforming JSON to Elixir.
+  It encapsualtes all the steps needed to accomplish the task.
+  """
+  @spec transform(input :: String.t()) :: {:ok, code :: String.t()} | {:error, term()}
   def transform(input) when is_binary(input) do
     case Jason.decode(input) do
       {:ok, parsed_json} ->

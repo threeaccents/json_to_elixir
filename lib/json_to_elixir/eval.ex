@@ -2,6 +2,9 @@ defmodule JTE.Eval do
   @moduledoc """
   Eval turns the AST into formatted Elixir code.
 
+  It replaces the atom placeholder for "real" atoms.
+  Since we transform the AST into a string we still not actually creating atoms.
+  We are just parsing the string to make it look like an atom.
   """
 
   def execute(ast) do
