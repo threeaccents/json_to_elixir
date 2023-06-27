@@ -31,7 +31,7 @@ defmodule JTEWeb.JsonToElixirLive do
             opts={
               Map.merge(
                 LiveMonacoEditor.default_opts(),
-                %{"language" => "elixir"}
+                %{"language" => "elixir", "theme" => "vs"}
               )
             }
             phx-debounce={1000}
