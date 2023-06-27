@@ -20,6 +20,9 @@ defmodule JTE.Parser do
     {:embedded_schema, [], [[do: {:__block__, [], Enum.reverse(blocks)}]]}
   end
 
+  def parse([:lbracket, :rbracket | _]),
+    do: {:embedded_schema, [], [[do: {:__block__, [], []}]]}
+
   def parse([:lbrace | tail]) do
     {blocks, _tail} = parse_block(tail, [])
 
@@ -63,7 +66,7 @@ defmodule JTE.Parser do
 
     # we set the array to the type of the first item in the array
     blocks = [
-      {:field, [], [atom(key), {:array, array_type}]} | blocks
+      {:field, [], [atom(key), {:array, schema_type(array_type)}]} | blocks
     ]
 
     parse_block(maybe_pop_comma(tail), blocks)
