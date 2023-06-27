@@ -4,6 +4,10 @@ defmodule JTE.Parser do
   It expects the tokens generarted by the lexer.
   Since the lexer only takes in valid JSON the parser
   can expect to receive only valid tokens.
+
+  The parser doesn't generate any dynamic atoms to prevent large JSON payloads
+  from taking down our system. Instead it places placeholder atom string
+  `:__string_to_atom__{ATOM_HERE}` which is then processed by the Eval step.
   """
 
   def parse([]) do
@@ -37,7 +41,7 @@ defmodule JTE.Parser do
     blocks = [
       {:embeds_one, [],
        [
-         ":string_to_atom__#{key}",
+         atom(key),
          {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
@@ -125,7 +129,7 @@ defmodule JTE.Parser do
     blocks = [
       {:embeds_one, [],
        [
-         ":string_to_atom__#{key}",
+         atom(key),
          {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
