@@ -10,6 +10,12 @@ defmodule JTE.Parser do
     {:embedded_schema, [], [[do: {:__block__, [], []}]]}
   end
 
+  def parse([:lbracket, :lbrace | tail]) do
+    {blocks, _tail} = parse_array_block(tail, [])
+
+    {:embedded_schema, [], [[do: {:__block__, [], Enum.reverse(blocks)}]]}
+  end
+
   def parse([:lbrace | tail]) do
     {blocks, _tail} = parse_block(tail, [])
 
