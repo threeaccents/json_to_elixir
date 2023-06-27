@@ -61,14 +61,14 @@ defmodule JsonToElixir.ParserTest do
                      [
                        {:field, [], [":string_to_atom__id", :string]},
                        {:field, [], [":string_to_atom__object", :string]},
-                       {:field, [], [":string_to_atom__address", :null]},
+                       {:field, [], [":string_to_atom__address", :string]},
                        {:field, [], [":string_to_atom__balance", :integer]},
                        {:field, [], [":string_to_atom__created", :integer]},
                        {:field, [], [":string_to_atom__currency", :string]},
                        {:field, [], [":string_to_atom__default_source", :string]},
                        {:field, [], [":string_to_atom__delinquent", :bool]},
                        {:field, [], [":string_to_atom__description", :string]},
-                       {:field, [], [":string_to_atom__discount", :null]},
+                       {:field, [], [":string_to_atom__discount", :string]},
                        {:field, [], [":string_to_atom__email", :string]},
                        {:field, [], [":string_to_atom__invoice_prefix", :string]},
                        {:embeds_one, [],
@@ -79,10 +79,11 @@ defmodule JsonToElixir.ParserTest do
                             do:
                               {:__block__, [],
                                [
-                                 {:field, [], [":string_to_atom__rendering_options", :null]},
-                                 {:field, [], [":string_to_atom__footer", :null]},
-                                 {:field, [], [":string_to_atom__default_payment_method", :null]},
-                                 {:field, [], [":string_to_atom__custom_fields", :null]}
+                                 {:field, [], [":string_to_atom__rendering_options", :string]},
+                                 {:field, [], [":string_to_atom__footer", :string]},
+                                 {:field, [],
+                                  [":string_to_atom__default_payment_method", :string]},
+                                 {:field, [], [":string_to_atom__custom_fields", :string]}
                                ]}
                           ]
                         ]},
@@ -97,14 +98,14 @@ defmodule JsonToElixir.ParserTest do
                                [{:field, [], [":string_to_atom__order_id", :string]}]}
                           ]
                         ]},
-                       {:field, [], [":string_to_atom__name", :null]},
+                       {:field, [], [":string_to_atom__name", :string]},
                        {:field, [], [":string_to_atom__next_invoice_sequence", :integer]},
-                       {:field, [], [":string_to_atom__phone", :null]},
-                       {:field, [], [":string_to_atom__shipping", :null]},
+                       {:field, [], [":string_to_atom__phone", :string]},
+                       {:field, [], [":string_to_atom__shipping", :string]},
                        {:field, [], [":string_to_atom__things", {:array, :integer}]},
                        {:field, [], [":string_to_atom__other", {:array, :string}]},
                        {:field, [], [":string_to_atom__tax_exempt", :string]},
-                       {:field, [], [":string_to_atom__test_clock", :null]},
+                       {:field, [], [":string_to_atom__test_clock", :string]},
                        {:field, [], [":string_to_atom__yes", {:array, :integer}]},
                        {:embeds_many, [],
                         [
@@ -152,7 +153,7 @@ defmodule JsonToElixir.ParserTest do
                |> Parser.parse()
     end
 
-    test "bug" do
+    test "nested json arrays" do
       input = """
       {
       "id": "ochOrder::2327eee7-f4e8-48c0-ae8f-7a6550b46a79",

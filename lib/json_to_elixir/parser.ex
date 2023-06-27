@@ -24,13 +24,13 @@ defmodule JTE.Parser do
 
   # Ex. "key": "value",
   defp parse_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_block(tail, blocks)
   end
 
   # Ex. "key": "value"}
   defp parse_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_block([:rbrace | tail], blocks)
   end
 
@@ -114,12 +114,12 @@ defmodule JTE.Parser do
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_array_block(tail, blocks)
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_array_block(maybe_pop_comma(tail), blocks)
   end
 
@@ -165,4 +165,7 @@ defmodule JTE.Parser do
   defp maybe_pop_comma(tokens), do: tokens
 
   defp atom(str), do: ":string_to_atom__#{str}"
+
+  defp schema_type(:null), do: :string
+  defp schema_type(type), do: type
 end
