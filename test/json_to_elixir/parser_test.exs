@@ -66,7 +66,7 @@ defmodule JsonToElixir.ParserTest do
                        {:field, [], [":string_to_atom__created", :integer]},
                        {:field, [], [":string_to_atom__currency", :string]},
                        {:field, [], [":string_to_atom__default_source", :string]},
-                       {:field, [], [":string_to_atom__delinquent", :bool]},
+                       {:field, [], [":string_to_atom__delinquent", :boolean]},
                        {:field, [], [":string_to_atom__description", :string]},
                        {:field, [], [":string_to_atom__discount", :string]},
                        {:field, [], [":string_to_atom__email", :string]},
@@ -87,7 +87,7 @@ defmodule JsonToElixir.ParserTest do
                                ]}
                           ]
                         ]},
-                       {:field, [], [":string_to_atom__livemode", :bool]},
+                       {:field, [], [":string_to_atom__livemode", :boolean]},
                        {:embeds_one, [],
                         [
                           ":string_to_atom__metadata",
