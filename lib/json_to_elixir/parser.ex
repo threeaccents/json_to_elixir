@@ -1,9 +1,13 @@
 defmodule JTE.Parser do
   @moduledoc """
-  JSON parser. 
+  JSON parser.
   It expects the tokens generarted by the lexer.
   Since the lexer only takes in valid JSON the parser
   can expect to receive only valid tokens.
+
+  The parser doesn't generate any dynamic atoms to prevent large JSON payloads
+  from taking down our system. Instead it places placeholder atom string
+  `:__string_to_atom__{ATOM_HERE}` which is then processed by the Eval step.
   """
 
   def parse([]) do
@@ -26,13 +30,13 @@ defmodule JTE.Parser do
 
   # Ex. "key": "value",
   defp parse_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_block(tail, blocks)
   end
 
   # Ex. "key": "value"}
   defp parse_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_block([:rbrace | tail], blocks)
   end
 
@@ -43,7 +47,7 @@ defmodule JTE.Parser do
     blocks = [
       {:embeds_one, [],
        [
-         ":string_to_atom__#{key}",
+         atom(key),
          {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
@@ -116,12 +120,30 @@ defmodule JTE.Parser do
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
     parse_array_block(tail, blocks)
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [atom(key), value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), schema_type(value_type)]} | blocks]
+    parse_array_block(maybe_pop_comma(tail), blocks)
+  end
+
+  defp parse_array_block([{_, key}, :colon, :lbracket | tail], blocks) do
+    {inner_blocks, tail} = parse_array_block(tail, [])
+
+    inner_blocks = Enum.uniq_by(inner_blocks, fn {_, _, [key | _]} -> key end)
+
+    blocks = [
+      {:embeds_many, [],
+       [
+         atom(key),
+         {:__aliases__, [], [atom(Macro.camelize(key))]},
+         [do: {:__block__, [], inner_blocks}]
+       ]}
+      | blocks
+    ]
+
     parse_array_block(maybe_pop_comma(tail), blocks)
   end
 
@@ -131,7 +153,7 @@ defmodule JTE.Parser do
     blocks = [
       {:embeds_one, [],
        [
-         ":string_to_atom__#{key}",
+         atom(key),
          {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
@@ -149,4 +171,8 @@ defmodule JTE.Parser do
   defp maybe_pop_comma(tokens), do: tokens
 
   defp atom(str), do: ":string_to_atom__#{str}"
+
+  defp schema_type(:null), do: :string
+  defp schema_type(:bool), do: :boolean
+  defp schema_type(type), do: type
 end
