@@ -1,19 +1,16 @@
 defmodule JTE.Eval do
   @moduledoc """
   Eval turns the AST into formatted Elixir code.
+
   """
 
   def execute(ast) do
     ast
     |> Macro.to_string()
-    |> replace_atoms()
+    |> replace_atom_placeholders()
   end
 
-  def transform_schema(input) do
-    Regex.replace(~r/\"\:string_to_atom__(\w+)\"/, input, "\\0", [])
-  end
-
-  def replace_atoms(input) do
+  def replace_atom_placeholders(input) do
     input = Regex.replace(~r/\":string_to_atom__(\w+)\"/, input, ":\\1")
     input = Regex.replace(~r/field\(":(\w+)",/, input, "field(:\\1,")
     input = Regex.replace(~r/embeds_one\(":(\w+)",/, input, "embeds_one(\\1,")
