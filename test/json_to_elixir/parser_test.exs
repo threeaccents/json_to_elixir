@@ -59,88 +59,96 @@ defmodule JsonToElixir.ParserTest do
                   do:
                     {:__block__, [],
                      [
-                       {:field, [], [:id, :string]},
-                       {:field, [], [:object, :string]},
-                       {:field, [], [:address, :null]},
-                       {:field, [], [:balance, :integer]},
-                       {:field, [], [:created, :integer]},
-                       {:field, [], [:currency, :string]},
-                       {:field, [], [:default_source, :string]},
-                       {:field, [], [:delinquent, :bool]},
-                       {:field, [], [:description, :string]},
-                       {:field, [], [:discount, :null]},
-                       {:field, [], [:email, :string]},
-                       {:field, [], [:invoice_prefix, :string]},
+                       {:field, [], [":string_to_atom__id", :string]},
+                       {:field, [], [":string_to_atom__object", :string]},
+                       {:field, [], [":string_to_atom__address", :null]},
+                       {:field, [], [":string_to_atom__balance", :integer]},
+                       {:field, [], [":string_to_atom__created", :integer]},
+                       {:field, [], [":string_to_atom__currency", :string]},
+                       {:field, [], [":string_to_atom__default_source", :string]},
+                       {:field, [], [":string_to_atom__delinquent", :bool]},
+                       {:field, [], [":string_to_atom__description", :string]},
+                       {:field, [], [":string_to_atom__discount", :null]},
+                       {:field, [], [":string_to_atom__email", :string]},
+                       {:field, [], [":string_to_atom__invoice_prefix", :string]},
                        {:embeds_one, [],
                         [
-                          :invoice_settings,
-                          {:__aliases__, [], [:InvoiceSettings]},
+                          ":string_to_atom__invoice_settings",
+                          {:__aliases__, [], [":string_to_atom__InvoiceSettings"]},
                           [
                             do:
                               {:__block__, [],
                                [
-                                 {:field, [], [:rendering_options, :null]},
-                                 {:field, [], [:footer, :null]},
-                                 {:field, [], [:default_payment_method, :null]},
-                                 {:field, [], [:custom_fields, :null]}
+                                 {:field, [], [":string_to_atom__rendering_options", :null]},
+                                 {:field, [], [":string_to_atom__footer", :null]},
+                                 {:field, [], [":string_to_atom__default_payment_method", :null]},
+                                 {:field, [], [":string_to_atom__custom_fields", :null]}
                                ]}
                           ]
                         ]},
-                       {:field, [], [:livemode, :bool]},
+                       {:field, [], [":string_to_atom__livemode", :bool]},
                        {:embeds_one, [],
                         [
-                          :metadata,
-                          {:__aliases__, [], [:Metadata]},
-                          [do: {:__block__, [], [{:field, [], [:order_id, :string]}]}]
+                          ":string_to_atom__metadata",
+                          {:__aliases__, [], [":string_to_atom__Metadata"]},
+                          [
+                            do:
+                              {:__block__, [],
+                               [{:field, [], [":string_to_atom__order_id", :string]}]}
+                          ]
                         ]},
-                       {:field, [], [:name, :null]},
-                       {:field, [], [:next_invoice_sequence, :integer]},
-                       {:field, [], [:phone, :null]},
-                       {:field, [], [:shipping, :null]},
-                       {:field, [], [:things, {:array, :integer}]},
-                       {:field, [], [:other, {:array, :string}]},
-                       {:field, [], [:tax_exempt, :string]},
-                       {:field, [], [:test_clock, :null]},
-                       {:field, [], [:yes, {:array, :integer}]},
+                       {:field, [], [":string_to_atom__name", :null]},
+                       {:field, [], [":string_to_atom__next_invoice_sequence", :integer]},
+                       {:field, [], [":string_to_atom__phone", :null]},
+                       {:field, [], [":string_to_atom__shipping", :null]},
+                       {:field, [], [":string_to_atom__things", {:array, :integer}]},
+                       {:field, [], [":string_to_atom__other", {:array, :string}]},
+                       {:field, [], [":string_to_atom__tax_exempt", :string]},
+                       {:field, [], [":string_to_atom__test_clock", :null]},
+                       {:field, [], [":string_to_atom__yes", {:array, :integer}]},
                        {:embeds_many, [],
                         [
-                          :real,
-                          {:__aliases__, [], [:Real]},
+                          ":string_to_atom__real",
+                          {:__aliases__, [], [":string_to_atom__Real"]},
                           [
                             do:
                               {:__block__, [],
                                [
                                  {:embeds_one, [],
                                   [
-                                    :three,
-                                    {:__aliases__, [], [:Three]},
+                                    ":string_to_atom__three",
+                                    {:__aliases__, [], [":string_to_atom__Three"]},
                                     [
                                       do:
                                         {:__block__, [],
                                          [
                                            {:embeds_one, [],
                                             [
-                                              :peter,
-                                              {:__aliases__, [], [:Peter]},
+                                              ":string_to_atom__peter",
+                                              {:__aliases__, [], [":string_to_atom__Peter"]},
                                               [
                                                 do:
                                                   {:__block__, [],
-                                                   [{:field, [], [:hello, :string]}]}
+                                                   [
+                                                     {:field, [],
+                                                      [":string_to_atom__hello", :string]}
+                                                   ]}
                                               ]
                                             ]},
-                                           {:field, [], [:hello, :string]}
+                                           {:field, [], [":string_to_atom__hello", :string]}
                                          ]}
                                     ]
                                   ]},
-                                 {:field, [], [:one, :string]},
-                                 {:field, [], [:two, :integer]}
+                                 {:field, [], [":string_to_atom__one", :string]},
+                                 {:field, [], [":string_to_atom__two", :integer]}
                                ]}
                           ]
                         ]}
                      ]}
                 ]
               ]} =
-               Lexer.lex(input)
+               input
+               |> Lexer.lex()
                |> Parser.parse()
     end
   end

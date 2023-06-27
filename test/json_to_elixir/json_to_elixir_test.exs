@@ -1,81 +1,60 @@
 defmodule JTETest do
   use ExUnit.Case, async: true
 
-  describe "traverse_map" do
-    test "one" do
-      input = %{
-        "data" => [
-          %{
-            "attributes" => %{
-              "body" => "The shortest article. Ever.",
-              "created" => "2015-05-22T14:56:29.000Z",
-              "title" => "JSON:API paints my bikeshed!",
-              "updated" => "2015-05-22T14:56:28.000Z"
-            },
-            "id" => "1",
-            "relationships" => %{
-              "author" => %{"data" => %{"id" => "42", "type" => "people"}}
-            },
-            "type" => "articles"
-          }
-        ],
-        "included" => [
-          %{
-            "attributes" => %{"age" => 80, "gender" => "male", "name" => "John"},
-            "id" => "42",
-            "type" => "people"
-          }
+  describe "transform/1" do
+    test "it transoform JSON to elixir code" do
+      json = """
+        {
+        "id": "cus_9s6XFG2Qq6Fe7v",
+        "object": "customer",
+        "address": null,
+        "balance": 0,
+        "created": 1483565364,
+        "currency": "usd",
+        "default_source": "card_1NLMwb2eZvKYlo2CrEVATdxC",
+        "delinquent": false,
+        "description": "Jamarcus Donnelly",
+        "discount": null,
+        "email": "user1850@smithpadberg.io",
+        "invoice_prefix": "E3C5260",
+        "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": null,
+        "footer": null,
+        "rendering_options": null
+        },
+        "livemode": false,
+        "metadata": {
+        "order_id": "673345234234234"
+        },
+        "name": null,
+        "next_invoice_sequence": 6,
+        "phone": null,
+        "shipping": null,
+        "things": [1,2],
+        "other": [],
+        "tax_exempt": "none",
+        "test_clock": null,
+        "yes": [1,2,3],
+        "real": [
+        {"one": "2"},
+        {"two": 3},
+        {"one": "three"},
+        {"three": {
+                    "hello": "wpr;da",
+                    "peter": {
+                      "hello": "world"
+                    }
+                  }}
         ]
-      }
-
-      input = """
-      {
-      "squadName": "Super hero squad",
-      "homeTown": "Metro City",
-      "formed": 2016,
-      "secretBase": "Super tower",
-      "active": true,
-      "members": [
-      {
-      "name": "Molecule Man",
-      "age": 29,
-      "secretIdentity": "Dan Jukes",
-      "powers": ["Radiation resistance", "Turning tiny", "Radiation blast"]
-      },
-      {
-      "name": "Madame Uppercut",
-      "age": 39,
-      "secretIdentity": "Jane Wilson",
-      "powers": [
-        "Million tonne punch",
-        "Damage resistance",
-        "Superhuman reflexes"
-      ]
-      },
-      {
-      "name": "Eternal Flame",
-      "age": 1000000,
-      "secretIdentity": "Unknown",
-      "powers": [
-        "Immortality",
-        "Heat Immunity",
-        "Inferno",
-        "Teleportation",
-        "Interdimensional travel"
-      ]
-      }
-      ]
-      }
-
+        }
       """
 
-      expected = """
-      defmodule MyJSON do
-        defstruct [foo: "", bee: ""]
-      end
-      """
+      expected_code =
+        "embedded_schema do\n  field(:address, :null)\n  field(:balance, :integer)\n  field(:created, :integer)\n  field(:currency, :string)\n  field(:default_source, :string)\n  field(:delinquent, :bool)\n  field(:description, :string)\n  field(:discount, :null)\n  field(:email, :string)\n  field(:id, :string)\n  field(:invoice_prefix, :string)\n\n  embeds_one(:invoice_settings, InvoiceSettings) do\n    field(:rendering_options, :null)\n    field(:footer, :null)\n    field(:default_payment_method, :null)\n    field(:custom_fields, :null)\n  end\n\n  field(:livemode, :bool)\n\n  embeds_one(:metadata, Metadata) do\n    field(:order_id, :string)\n  end\n\n  field(:name, :null)\n  field(:next_invoice_sequence, :integer)\n  field(:object, :string)\n  field(:other, {:array, :string})\n  field(:phone, :null)\n\n  embeds_many(:real, Real) do\n    embeds_one(:three, Three) do\n      embeds_one(:peter, Peter) do\n        field(:hello, :string)\n      end\n\n      field(:hello, :string)\n    end\n\n    field(:one, :string)\n    field(:two, :integer)\n  end\n\n  field(:shipping, :null)\n  field(:tax_exempt, :string)\n  field(:test_clock, :null)\n  field(:things, {:array, :integer})\n  field(:yes, {:array, :integer})\nend"
 
-      assert expected == JTE.convert_map(input)
+      assert {:ok, code} = JTE.transform(json)
+      assert code == expected_code
     end
   end
 end

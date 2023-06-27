@@ -93,7 +93,7 @@ defmodule JsonToElixir.LexTest do
         :eof
       ]
 
-      assert Lexer.lex(input) |> IO.inspect(limit: :infinity) == exepected
+      assert Lexer.lex(input) == exepected
     end
   end
 end
