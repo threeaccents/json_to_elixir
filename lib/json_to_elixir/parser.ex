@@ -5,7 +5,6 @@ defmodule JTE.Parser do
   Since the lexer only takes in valid JSON the parser
   can expect to receive only valid tokens.
   """
-  @literals ~w(string integer float null bool)a
 
   def parse([]) do
     {:embedded_schema, [], [[do: {:__block__, [], []}]]}
@@ -21,13 +20,13 @@ defmodule JTE.Parser do
 
   # Ex. "key": "value",
   defp parse_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [":string_to_atom__#{key}", value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), value_type]} | blocks]
     parse_block(tail, blocks)
   end
 
   # Ex. "key": "value"}
   defp parse_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [":string_to_atom__#{key}", value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), value_type]} | blocks]
     parse_block([:rbrace | tail], blocks)
   end
 
@@ -39,7 +38,7 @@ defmodule JTE.Parser do
       {:embeds_one, [],
        [
          ":string_to_atom__#{key}",
-         {:__aliases__, [], [":string_to_atom__#{Macro.camelize(key)}"]},
+         {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
       | blocks
@@ -54,7 +53,7 @@ defmodule JTE.Parser do
 
     # we set the array to the type of the first item in the array
     blocks = [
-      {:field, [], [":string_to_atom__#{key}", {:array, array_type}]} | blocks
+      {:field, [], [atom(key), {:array, array_type}]} | blocks
     ]
 
     parse_block(maybe_pop_comma(tail), blocks)
@@ -63,7 +62,7 @@ defmodule JTE.Parser do
   # Ex. "key": []
   defp parse_block([{_, key}, :colon, :lbracket, :rbracket | tail], blocks) do
     blocks = [
-      {:field, [], [":string_to_atom__#{key}", {:array, :string}]} | blocks
+      {:field, [], [atom(key), {:array, :string}]} | blocks
     ]
 
     parse_block(maybe_pop_comma(tail), blocks)
@@ -88,8 +87,8 @@ defmodule JTE.Parser do
     blocks = [
       {:embeds_many, [],
        [
-         ":string_to_atom__#{key}",
-         {:__aliases__, [], [":string_to_atom__#{Macro.camelize(key)}"]},
+         atom(key),
+         {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
       | blocks
@@ -111,12 +110,12 @@ defmodule JTE.Parser do
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :comma | tail], blocks) do
-    blocks = [{:field, [], [":string_to_atom__#{key}", value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), value_type]} | blocks]
     parse_array_block(tail, blocks)
   end
 
   defp parse_array_block([{_, key}, :colon, {value_type, _}, :rbrace | tail], blocks) do
-    blocks = [{:field, [], [":string_to_atom__#{key}", value_type]} | blocks]
+    blocks = [{:field, [], [atom(key), value_type]} | blocks]
     parse_array_block(maybe_pop_comma(tail), blocks)
   end
 
@@ -127,7 +126,7 @@ defmodule JTE.Parser do
       {:embeds_one, [],
        [
          ":string_to_atom__#{key}",
-         {:__aliases__, [], [":string_to_atom__#{Macro.camelize(key)}"]},
+         {:__aliases__, [], [atom(Macro.camelize(key))]},
          [do: {:__block__, [], inner_blocks}]
        ]}
       | blocks
@@ -142,4 +141,6 @@ defmodule JTE.Parser do
 
   defp maybe_pop_comma([:comma | tail]), do: tail
   defp maybe_pop_comma(tokens), do: tokens
+
+  defp atom(str), do: ":string_to_atom__#{str}"
 end
