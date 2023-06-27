@@ -123,6 +123,24 @@ defmodule JTE.Parser do
     parse_array_block(maybe_pop_comma(tail), blocks)
   end
 
+  defp parse_array_block([{_, key}, :colon, :lbracket | tail], blocks) do
+    {inner_blocks, tail} = parse_array_block(tail, [])
+
+    inner_blocks = Enum.uniq_by(inner_blocks, fn {_, _, [key | _]} -> key end)
+
+    blocks = [
+      {:embeds_many, [],
+       [
+         atom(key),
+         {:__aliases__, [], [atom(Macro.camelize(key))]},
+         [do: {:__block__, [], inner_blocks}]
+       ]}
+      | blocks
+    ]
+
+    parse_array_block(maybe_pop_comma(tail), blocks)
+  end
+
   defp parse_array_block([{_, key}, :colon, :lbrace | tail], blocks) do
     {inner_blocks, rest} = parse_block(tail, [])
 
