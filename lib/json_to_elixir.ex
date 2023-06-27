@@ -9,6 +9,7 @@ defmodule JTE do
   """
   alias JTE.Lexer
   alias JTE.Parser
+  alias JTE.Eval
 
   require Logger
 
@@ -19,7 +20,7 @@ defmodule JTE do
          Jason.encode!(parsed_json)
          |> Lexer.lex()
          |> Parser.parse()
-         |> Macro.to_string()}
+         |> Eval.execute()}
 
       {:error, reason} ->
         Logger.error("failed to parse json #{inspect(reason)}")
