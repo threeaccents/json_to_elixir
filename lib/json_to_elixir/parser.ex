@@ -1,6 +1,6 @@
 defmodule JTE.Parser do
   @moduledoc """
-  JSON parser. 
+  JSON parser.
   It expects the tokens generarted by the lexer.
   Since the lexer only takes in valid JSON the parser
   can expect to receive only valid tokens.
@@ -167,5 +167,6 @@ defmodule JTE.Parser do
   defp atom(str), do: ":string_to_atom__#{str}"
 
   defp schema_type(:null), do: :string
+  defp schema_type(:bool), do: :boolean
   defp schema_type(type), do: type
 end
