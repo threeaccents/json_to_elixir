@@ -4,6 +4,8 @@ Transform JSON into embedded schemas!
 
 This is handy when you want to have types/validation for request/response payloads.
 
+<img width="1433" alt="Screen Shot 2023-06-26 at 8 02 58 PM" src="https://github.com/threeaccents/json_to_elixir/assets/15348071/15bc8a6b-d3c8-4b0f-b3e4-42e91cf2d962">
+
 # Running locally
 
 To start your Phoenix server:
