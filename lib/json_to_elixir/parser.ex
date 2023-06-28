@@ -110,6 +110,9 @@ defmodule JTE.Parser do
     parse_block(maybe_pop_comma(tail), blocks)
   end
 
+  # catch all if something fails with parsing we just return the ast we currently have
+  defp parse_block(_, blocks), do: {blocks, []}
+
   defp parse_array_block([:rbracket | tail], blocks) do
     {blocks, tail}
   end
@@ -165,6 +168,9 @@ defmodule JTE.Parser do
 
     parse_array_block(rest, blocks)
   end
+
+  # catch all if something fails with parsing we just return the ast we currently have
+  defp parse_array_block(_, blocks), do: {blocks, []}
 
   defp eat_until([], _), do: []
   defp eat_until([token | tail], terminator) when token == terminator, do: tail
