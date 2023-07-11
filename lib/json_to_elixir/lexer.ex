@@ -8,7 +8,7 @@ defmodule JTE.Lexer do
   defguard is_whitespace(c) when c in ~c[ \r\n\t]
   defguard is_letter(c) when c in ?a..?z or c in ?A..?Z or c == ?_
   defguard is_digit(c) when c in ?0..?9
-  defguard is_float_digit(c) when c in ?0..?9 or c == ?.
+  defguard is_float_or_digit(c) when c in ?0..?9 or c == ?.
   defguard is_quote(c) when c == ?"
 
   def lex(input) when is_binary(input) do
@@ -49,6 +49,11 @@ defmodule JTE.Lexer do
         {string, rest} = read_string(rest, <<>>)
         {{:string, string}, rest}
 
+      <<"-", rest::binary>> ->
+        {number, rest} = read_number(rest, "-")
+
+        {{number_type(number), number}, rest}
+
       <<c::8, rest::binary>> when is_letter(c) ->
         {literal, rest} = read_literal(rest, <<c>>)
 
@@ -62,7 +67,7 @@ defmodule JTE.Lexer do
       <<c::8, rest::binary>> when is_digit(c) ->
         {number, rest} = read_number(rest, <<c>>)
 
-        {{:integer, number}, rest}
+        {{number_type(number), number}, rest}
 
       chars ->
         raise "invalid token #{inspect(chars)}"
@@ -85,11 +90,15 @@ defmodule JTE.Lexer do
     read_literal(rest, [acc | <<c>>])
   end
 
-  defp read_number(<<c::8, _rest::binary>> = chars, acc) when not is_float_digit(c) do
+  defp read_number(<<c::8, _rest::binary>> = chars, acc) when not is_float_or_digit(c) do
     {IO.iodata_to_binary(acc), chars}
   end
 
   defp read_number(<<c::8, rest::binary>>, acc) do
     read_number(rest, [acc | <<c>>])
+  end
+
+  defp number_type(number) do
+    if String.contains?(number, "."), do: :float, else: :integer
   end
 end

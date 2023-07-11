@@ -271,7 +271,7 @@ defmodule JsonToElixir.ParserTest do
                                     {:__aliases__, [], [":string_to_atom__BundleComponents"]},
                                     [do: {:__block__, [], []}]
                                   ]},
-                                 {:field, [], [":string_to_atom__unitPriceAmount", :integer]},
+                                 {:field, [], [":string_to_atom__unitPriceAmount", :float]},
                                  {:field, [], [":string_to_atom__requestedQtyUom", :string]},
                                  {:embeds_many, [],
                                   [
